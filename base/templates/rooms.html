@@ -1,11 +1,19 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Room</h1>
+<h1>Rooms</h1>
 <ul>
     {% for room in rooms %}
     <li id="room.{{room.id}}">
-        <a href="{% url 'room' room.id %}">{{ room.name }}</a>
+        {% if room.host.username %}
+        <span>@{{ room.host.username }}</span>
+        {% endif %}
+        <div>
+            <a href="{% url 'room' room.id %}">{{ room.name }}</a>
+        </div>
+        {% if room.topic.name %}
+        <span>{{ room.topic.name }}</span>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>
