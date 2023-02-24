@@ -1,5 +1,7 @@
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from .models import Room, Topic
+from django.contrib import messages
+from .models import Room, Topic, User
 from django.db.models import Q
 from django.http import HttpResponse
 from .forms import RoomForm
@@ -80,3 +82,28 @@ def delete_room(request, id):
         return redirect('rooms')
 
     return render(request, 'delete.html', {'object': room})
+
+
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            messages.error(request, 'User does not exist')
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid credentials')
+
+    return render(request, 'login_register.html', {})
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
