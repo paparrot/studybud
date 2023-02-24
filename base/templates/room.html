@@ -1,5 +1,9 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<p>By @{{ room.host.username }}</p>
 <h1>Room {{ room.name }}</h1>
+<p>{{ room.description }}</p>
+<a href="{% url 'update-room' room.id %}">Update</a>
+<a href="{% url 'delete-room' room.id %}">Delete</a>
 {% endblock %}

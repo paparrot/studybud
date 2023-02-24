@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1>Rooms</h1>
+<a href="{% url 'create-room' %}">Create yet one room</a>
 <ul>
     {% for room in rooms %}
     <li id="room.{{room.id}}">
