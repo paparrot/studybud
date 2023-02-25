@@ -4,6 +4,8 @@
 <p>By @{{ room.host.username }}</p>
 <h1>Room {{ room.name }}</h1>
 <p>{{ room.description }}</p>
+{% if request.user == room.host %}
 <a href="{% url 'update-room' room.id %}">Update</a>
 <a href="{% url 'delete-room' room.id %}">Delete</a>
+{% endif %}
 {% endblock %}

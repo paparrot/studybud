@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Room, Topic, User
@@ -44,6 +46,7 @@ def room(request, id):
     return render(request, 'room.html', context)
 
 
+@login_required(login_url='login')
 def create_room(request):
     form = RoomForm()
     if request.method == 'POST':
@@ -56,9 +59,14 @@ def create_room(request):
     return render(request, 'room_form.html', context)
 
 
+@login_required(login_url='login')
 def update_room(request, id):
     room = Room.objects.get(id=id)
     form = RoomForm(instance=room)
+
+    if request.user != room.user:
+        messages.error('You are not allowed here!')
+        return redirect('rooms')
 
     if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
@@ -74,6 +82,7 @@ def update_room(request, id):
     return render(request, 'room_form.html', context)
 
 
+@login_required(login_url='login')
 def delete_room(request, id):
     room = Room.objects.get(id=id)
 
@@ -86,7 +95,7 @@ def delete_room(request, id):
 
 def login_user(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
 
         try:
@@ -101,7 +110,25 @@ def login_user(request):
         else:
             messages.error(request, 'Invalid credentials')
 
-    return render(request, 'login_register.html', {})
+    return render(request, 'login_user.html', {})
+
+
+def register_user(request):
+    form = UserCreationForm()
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'An error occurred during registration')
+            return redirect('register')
+
+    return render(request, 'register_user.html', {'form': form})
 
 
 def logout_user(request):
