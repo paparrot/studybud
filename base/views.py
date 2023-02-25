@@ -24,10 +24,20 @@ def home(request):
     else:
         rooms = Room.objects.all()
 
+    room_messages = Message.objects.filter(
+        Q(room__topic__name__icontains=q) |
+        Q(room__name__icontains=q)
+    )[:3]
+
     rooms_count = rooms.count()
     rooms = rooms[:5]
 
-    return render(request, 'home.html', {'rooms': rooms, 'topics': topics, 'rooms_count': rooms_count})
+    return render(request, 'home.html', {
+        'rooms': rooms,
+        'topics': topics,
+        'rooms_count': rooms_count,
+        'room_messages': room_messages
+    })
 
 
 def rooms(request):

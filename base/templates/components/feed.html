@@ -1,0 +1,10 @@
+{% for room in rooms %}
+<article>
+    <p>@{{ room.host.username }}</p>
+    <h5>
+        <a href="{% url 'room' room.id %}">
+            {{ room.name }}
+        </a>
+    </h5>
+</article>
+{% endfor %}
