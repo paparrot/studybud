@@ -1,0 +1,23 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+
+</style>
+<div class="container">
+    <div>
+        <h1>User {{ user.username }}</h1>
+        {% include 'components/topics.html' %}
+    </div>
+    <div>
+        {% include 'components/feed.html' %}
+    </div>
+    <div>
+        {% include 'components/activity.html' %}
+    </div>
+</div>
+{% endblock %}
