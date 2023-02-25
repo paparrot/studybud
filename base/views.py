@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Room, Topic, User
+from .models import Room, Topic, User, Message
 from django.db.models import Q
 from django.http import HttpResponse
 from .forms import RoomForm
@@ -39,10 +39,21 @@ def rooms(request):
 def room(request, id):
     try:
         _room = Room.objects.get(id=id)
+        _room_messages = _room.message_set.all()
+        _room_participants = _room.participants.all()
     except Room.DoesNotExist:
         return HttpResponse("Not found")
 
-    context = {'room': _room}
+    if request.method == 'POST':
+        message = Message.objects.create(
+            user=request.user,
+            room=_room,
+            body=request.POST.get('body')
+        )
+        _room.participants.add(request.user)
+        return redirect('room', id=_room.id)
+
+    context = {'room': _room, 'room_messages': _room_messages, 'participants': _room_participants}
     return render(request, 'room.html', context)
 
 
@@ -134,3 +145,19 @@ def register_user(request):
 def logout_user(request):
     logout(request)
     return redirect('home')
+
+
+@login_required(login_url='login')
+def delete_message(request, id):
+    message = Message.objects.get(id=id)
+    room = message.room
+
+    if request.user != message.user:
+        messages.error('You are not author of this message')
+        return redirect('room', room.id)
+
+    if request.method == 'POST':
+        message.delete()
+        return redirect('room', room.id)
+
+    return render(request, 'delete.html', {'object': message})
