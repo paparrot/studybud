@@ -6,7 +6,7 @@ from django.contrib import messages
 from .models import Room, Topic, User, Message
 from django.db.models import Q
 from django.http import HttpResponse
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 
 
 # Create your views here.
@@ -192,3 +192,17 @@ def user(request, id):
 
     context = {'user': _user, 'rooms': _rooms, 'topics': _topics, 'room_messages': _room_messages}
     return render(request, 'profile.html', context)
+
+
+@login_required(login_url='login')
+def update_user(request):
+    user = request.user
+    form = UserForm(instance=user)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user', user.id)
+
+    context = {'form': form}
+    return render(request, 'update_user.html', context)
