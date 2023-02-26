@@ -567,6 +567,7 @@ a {
 }
 
 .topics__list {
+    margin-top: 2rem;
   list-style: none;
 }
 
