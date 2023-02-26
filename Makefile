@@ -10,5 +10,5 @@ migration:
 show migrations:
 	python3 manage.py showmigrations
 
-create admin:
+superuser:
 	python3 manage.py createsuperuser

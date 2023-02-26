@@ -84,7 +84,7 @@
                 <p>Hosted By</p>
                 <a href="{% url 'user' room.host.id %}" class="room__author">
                   <div class="avatar avatar--small">
-                    <img src="https://randomuser.me/api/portraits/men/37.jpg" />
+                    <img src="{{ room.host.avatar.url }}" />
                   </div>
                   <span>@{{ room.host }}</span>
                 </a>
@@ -102,9 +102,9 @@
                     <div class="thread__author">
                       <a href="{% url 'user' message.user.id %}" class="thread__authorInfo">
                         <div class="avatar avatar--small">
-                          <img src="https://randomuser.me/api/portraits/men/37.jpg" />
+                          <img src="{{ message.user.avatar.url }}" />
                         </div>
-                        <span>@{{ message.user }}</span>
+                        <span>@{{ message.user.username }}</span>
                       </a>
                       <span class="thread__date">{{ message.created|timesince }} ago</span>
                     </div>
@@ -143,7 +143,7 @@
             {% for participant in participants %}
             <a href="{% url 'user' participant.id %}" class="participant">
               <div class="avatar avatar--medium">
-                <img src="https://randomuser.me/api/portraits/men/37.jpg" />
+                <img src="{{ participant.avatar.url }}" />
               </div>
               <p>
                 {{ participant }}
@@ -156,48 +156,4 @@
         <!--  End -->
       </div>
     </main>
-
-<div class="container">
-    <div>
-        <p>By @{{ room.host.username }}</p>
-        <h1>Room {{ room.name }}</h1>
-        <p>{{ room.description }}</p>
-
-        <div>
-            <h2>Conversation</h2>
-            {% for message in room_messages %}
-            <div>
-                {% if request.user == message.user %}
-                <a href="{% url 'delete-message' message.id %}">Delete message</a>
-                {% endif %}
-                <small>@{{ message.user }} {{ message.created|timesince }} ago</small>
-                <p>{{ message.body }}</p>
-            </div>
-            {% endfor %}
-            <hr>
-            {% if request.user.is_authenticated %}
-            <div class="message-form">
-                <form method="POST" action="">
-                    {% csrf_token %}
-
-                    <input name="body" placeholder="Write your message here..."/>
-                </form>
-            </div>
-            {% endif %}
-        </div>
-
-        {% if request.user == room.host %}
-        <a href="{% url 'update-room' room.id %}">Update</a>
-        <a href="{% url 'delete-room' room.id %}">Delete</a>
-        {% endif %}
-    </div>
-
-    <div class="participants">
-        <h2>Participants</h2>
-        {% for participant in participants %}
-            <p>@{{ participant.username }}</p>
-        {% endfor %}
-    </div>
-</div>
-
 {% endblock %}
